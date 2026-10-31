@@ -30,6 +30,12 @@
   const metronomeStatus = document.getElementById("metronomeStatus");
   const metronomeBpm = document.getElementById("metronomeBpm");
 
+  const audioVolume = document.getElementById("audioVolume");
+  const audioVolumeValue = document.getElementById("audioVolumeValue");
+
+  const metronomeVolume = document.getElementById("metronomeVolume");
+  const metronomeVolumeValue = document.getElementById("metronomeVolumeValue");
+
   let selectedFile = null;
   let isAnalyzing = false;
 
@@ -37,6 +43,17 @@
   const audio = new Audio();
   audio.preload = "metadata";
 
+  audio.volume = 0.7;
+
+  audioVolume.addEventListener("input", () => {
+    audio.volume = Number(audioVolume.value) / 100;
+    audioVolumeValue.textContent = `${audioVolume.value}%`;
+  });
+
+  metronomeVolume.addEventListener("input", () => {
+    metronomeVolumeValue.textContent = `${metronomeVolume.value}%`;
+  });
+  
   let audioURL = null;
   let audioContext = null;
   let metronomeTimer = null;
@@ -344,6 +361,9 @@
   function playMetronomeClick(time) {
     if (!audioContext) return;
 
+    const volume = Number(metronomeVolume.value) / 100;
+    if (volume <= 0) return;
+
     const oscillator = audioContext.createOscillator();
     const gain = audioContext.createGain();
 
@@ -351,9 +371,9 @@
     oscillator.frequency.setValueAtTime(1000, time);
 
     gain.gain.setValueAtTime(0.0001, time);
-    gain.gain.exponentialRampToValueAtTime(0.22, time + 0.003);
+    gain.gain.exponentialRampToValueAtTime(0.22 * volume, time + 0.003);
     gain.gain.exponentialRampToValueAtTime(0.0001, time + 0.045);
-
+  
     oscillator.connect(gain);
     gain.connect(audioContext.destination);
 
