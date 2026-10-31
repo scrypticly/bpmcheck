@@ -45,6 +45,17 @@
             <div class="time-row"><span id="currentTime">0:00</span><span id="duration">0:00</span></div>
           </div>
         </div>
+        <div class="volume-controls">
+          <label for="audioVolume">Song Volume</label>
+          <input id="audioVolume" type="range" min="0" max="100" value="70">
+          <span id="audioVolumeValue">70%</span>
+        </div>
+
+        <div class="volume-controls">
+          <label for="metronomeVolume">Metronome Volume</label>
+          <input id="metronomeVolume" type="range" min="0" max="100" value="100">
+          <span id="metronomeVolumeValue">100%</span>
+        </div>
         <label class="metronome-toggle" for="metronomeEnabled">
           <input id="metronomeEnabled" type="checkbox" checked>
           <span class="toggle-check" aria-hidden="true"></span>
