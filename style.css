@@ -1,0 +1,57 @@
+:root {
+  --paper: #e9eef2;
+  --ink: #14202b;
+  --muted: #55677a;
+  --signal: #2d4bff;
+  --line: #b9c6d2;
+  --font: "Bricolage Grotesque", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #101821;
+    --ink: #eaf0f5;
+    --muted: #8da0b3;
+    --signal: #7b93ff;
+    --line: #2b3a49;
+  }
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font);
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  padding: 24px;
+}
+main { width: 100%; max-width: 560px; }
+h1 { font-size: 1.1rem; font-weight: 700; margin: 0 0 20px; letter-spacing: .01em; }
+.drop {
+  display: block;
+  border: 2px dashed var(--line);
+  border-radius: 6px;
+  padding: 44px 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+}
+.drop:hover, .drop.over { border-color: var(--signal); background: color-mix(in srgb, var(--signal) 6%, transparent); }
+.drop:focus-within { outline: 3px solid var(--signal); outline-offset: 3px; }
+.drop strong { display: block; font-size: 1.25rem; margin-bottom: 6px; }
+.drop span { color: var(--muted); font-size: .95rem; }
+input[type=file] { position: absolute; opacity: 0; width: 1px; height: 1px; }
+#result { margin-top: 28px; min-height: 190px; }
+.name { color: var(--muted); font-size: .95rem; word-break: break-all; margin: 0 0 4px; }
+.bpm { display: flex; align-items: baseline; gap: 12px; }
+.bpm output { font-size: clamp(5rem, 24vw, 8.5rem); font-weight: 800; line-height: 1; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+.bpm label { font-size: 1.4rem; font-weight: 700; color: var(--muted); }
+.beat { display: flex; align-items: center; gap: 10px; margin-top: 14px; color: var(--muted); font-size: .9rem; }
+.dot { width: 14px; height: 14px; border-radius: 50%; background: var(--signal); animation: pulse var(--period, .5s) infinite; }
+@keyframes pulse { 0% { transform: scale(1.5); opacity: 1; } 40% { transform: scale(1); opacity: .35; } 100% { transform: scale(1); opacity: .35; } }
+@media (prefers-reduced-motion: reduce) { .dot { animation: none; } }
+.status { color: var(--muted); font-size: 1rem; }
+.error { color: #c62828; }
+@media (prefers-color-scheme: dark) { .error { color: #ff8a80; } }
+.note { margin-top: 28px; color: var(--muted); font-size: .85rem; line-height: 1.5; }
