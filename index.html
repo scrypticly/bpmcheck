@@ -1,29 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>BPM Checker</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#11111b">
+  <title>BPM Checker</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
 </head>
 <body>
-<main>
-  <h1>BPM checker</h1>
+  <main class="app">
+    <header class="header">
+      <div class="brand-mark" aria-hidden="true">♫</div>
+      <p class="eyebrow">AUDIO TOOL</p>
+      <h1>BPM <span>Checker</span></h1>
+      <p class="subtitle">Find the tempo of any song in seconds.</p>
+    </header>
 
-  <label class="drop" id="drop">
-    <input type="file" id="file" accept="audio/*">
-    <strong>Choose an audio file</strong>
-    <span>or drop it here. MP3, WAV, M4A, OGG, FLAC</span>
-  </label>
+    <section class="panel" aria-label="Audio BPM analyzer">
+      <label class="drop-zone" id="dropZone" for="audioFile">
+        <span class="upload-icon" aria-hidden="true">↑</span>
+        <strong>Drop an audio file here</strong>
+        <span class="drop-hint">or click to browse your device</span>
+        <span class="file-types">MP3 · WAV · OGG · M4A · FLAC*</span>
+        <input id="audioFile" type="file" accept="audio/*">
+      </label>
 
-  <div id="result" aria-live="polite"></div>
+      <div class="file-info" id="fileInfo" hidden>
+        <div class="file-icon" aria-hidden="true">♫</div>
+        <div class="file-copy">
+          <strong id="fileName">audio.mp3</strong>
+          <span id="fileMeta">Ready to analyze</span>
+        </div>
+        <button class="text-button" id="removeFile" type="button" aria-label="Remove audio file">✕</button>
+      </div>
 
-  <p class="note">Your file stays in your browser. Nothing is uploaded. Works best on music with a steady beat; the result is an estimate.</p>
-</main>
+      <button class="analyze-button" id="analyzeButton" type="button" disabled>
+        <span class="button-label">Analyze BPM</span>
+        <span class="button-arrow" aria-hidden="true">→</span>
+      </button>
 
-<script src="script.js"></script>
+      <div class="progress-wrap" id="progressWrap" hidden>
+        <div class="progress-top">
+          <span id="statusText">Analyzing audio…</span>
+          <span id="progressPercent">0%</span>
+        </div>
+        <div class="progress-track"><div class="progress-bar" id="progressBar"></div></div>
+      </div>
+
+      <section class="result" id="result" aria-live="polite" hidden>
+        <p class="result-label">ESTIMATED TEMPO</p>
+        <div class="bpm-line"><strong id="bpmValue">--</strong><span>BPM</span></div>
+        <p class="result-note" id="resultNote">Analysis complete.</p>
+        <button class="text-button retry-button" id="retryButton" type="button">Analyze another file</button>
+      </section>
+
+      <p class="error" id="errorMessage" role="alert" hidden></p>
+    </section>
+
+    <footer>
+      <p>Your audio is analyzed locally in your browser. It is never uploaded.</p>
+      <p class="footnote">*Audio format support depends on your browser.</p>
+    </footer>
+  </main>
 </body>
 </html>
