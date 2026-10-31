@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BPM Checker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+  <h1>BPM checker</h1>
+
+  <label class="drop" id="drop">
+    <input type="file" id="file" accept="audio/*">
+    <strong>Choose an audio file</strong>
+    <span>or drop it here. MP3, WAV, M4A, OGG, FLAC</span>
+  </label>
+
+  <div id="result" aria-live="polite"></div>
+
+  <p class="note">Your file stays in your browser. Nothing is uploaded. Works best on music with a steady beat; the result is an estimate.</p>
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>
