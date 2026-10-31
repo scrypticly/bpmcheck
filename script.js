@@ -1,30 +1,3 @@
-console.log("BPM Checker script loaded");
-
-document.addEventListener("DOMContentLoaded", () => {
-    console.log("DOM loaded");
-
-    [
-        "audioFile",
-        "dropZone",
-        "fileInfo",
-        "fileName",
-        "fileMeta",
-        "removeFile",
-        "analyzeButton",
-        "retryButton",
-        "progressWrap",
-        "progressBar",
-        "progressPercent",
-        "statusText",
-        "result",
-        "bpmValue",
-        "resultNote",
-        "errorMessage"
-    ].forEach(id => {
-        console.log(id, document.getElementById(id));
-    });
-});
-
 (() => {
   const fileInput = document.getElementById("audioFile");
   const dropZone = document.getElementById("dropZone");
