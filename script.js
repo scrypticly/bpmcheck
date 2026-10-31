@@ -374,16 +374,7 @@
   }
 
   function synchronizeMetronome() {
-    if (!audio.paused && metronomeEnabled.checked && getBpm()) {
-      stopMetronome();
-
-      const bpm = getBpm();
-      const beatDuration = 60 / bpm;
-
-      nextBeatIndex = Math.ceil(
-        audio.currentTime / beatDuration - 0.00001
-      );
-    }
+    startMetronome();
   }
 
   // --------------------------------------------------
