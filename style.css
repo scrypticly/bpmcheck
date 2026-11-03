@@ -373,6 +373,73 @@ footer p { margin: 4px 0; }
   font-variant-numeric: tabular-nums;
 }
 
+/* --------------------------------------------------
+   BPM CHANGE DETECTION
+-------------------------------------------------- */
+
+.seek-track-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.bpm-markers {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.bpm-marker {
+  position: absolute;
+  top: 50%;
+  width: 3px;
+  height: 15px;
+  border-radius: 3px;
+  background: var(--pink);
+  box-shadow: 0 0 7px rgba(255, 94, 188, .7);
+  transform: translate(-50%, -50%);
+  z-index: 2;
+}
+
+.bpm-changes {
+  margin-top: 22px;
+  text-align: left;
+}
+
+.bpm-changes h3 {
+  margin: 0 0 12px;
+  color: #d9caff;
+  font-size: 13px;
+}
+
+.bpm-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.bpm-table th {
+  padding: 10px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+  text-align: left;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  border-bottom: 1px solid var(--border);
+}
+
+.bpm-table td {
+  padding: 11px 10px;
+  color: var(--text);
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  font-variant-numeric: tabular-nums;
+}
+
+.bpm-table td:last-child {
+  color: #c5b5ff;
+  font-weight: 750;
+}
+
 [hidden] { display: none !important; }
 
 @media (max-width: 480px) {
