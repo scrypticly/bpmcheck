@@ -5,8 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#11111b">
   <title>BPM Checker</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="script.js" defer></script>
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/upload.css">
+  <link rel="stylesheet" href="css/player.css">
+  <link rel="stylesheet" href="css/results.css">
+  <script type="module" src="js/main.js"></script>
 </head>
 <body>
   <main class="app">
@@ -48,17 +51,18 @@
             <div class="time-row"><span id="currentTime">0:00</span><span id="duration">0:00</span></div>
           </div>
         </div>
+
         <div class="volume-controls">
           <label for="audioVolume">Song Volume</label>
           <input id="audioVolume" type="range" min="0" max="100" value="70">
           <span id="audioVolumeValue">70%</span>
         </div>
-
         <div class="volume-controls">
           <label for="metronomeVolume">Metronome Volume</label>
           <input id="metronomeVolume" type="range" min="0" max="100" value="100">
           <span id="metronomeVolumeValue">100%</span>
         </div>
+
         <label class="metronome-toggle" for="metronomeEnabled">
           <input id="metronomeEnabled" type="checkbox" checked>
           <span class="toggle-check" aria-hidden="true"></span>
@@ -67,7 +71,7 @@
         </label>
       </section>
 
-      <label class="metronome-toggle" for="bpmSwitchesEnabled">
+      <label class="metronome-toggle bpm-switch-toggle" for="bpmSwitchesEnabled">
         <input id="bpmSwitchesEnabled" type="checkbox">
         <span class="toggle-check" aria-hidden="true"></span>
         <span class="metronome-copy">
@@ -75,7 +79,7 @@
           <small>Detect tempo changes throughout the song</small>
         </span>
       </label>
-      
+
       <button class="analyze-button" id="analyzeButton" type="button" disabled>
         <span class="button-label">Analyze BPM</span>
         <span class="button-arrow" aria-hidden="true">→</span>
@@ -96,12 +100,7 @@
         <div class="bpm-changes" id="bpmChanges" hidden>
           <h3>Tempo Changes</h3>
           <table class="bpm-table">
-            <thead>
-              <tr>
-                <th>Time</th>
-                <th>BPM</th>
-              </tr>
-            </thead>
+            <thead><tr><th>Time</th><th>BPM</th></tr></thead>
             <tbody id="bpmTableBody"></tbody>
           </table>
         </div>

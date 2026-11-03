@@ -1,0 +1,216 @@
+/* Audio player, metronome and volume controls */
+/* --------------------------------------------------
+   AUDIO PLAYER
+-------------------------------------------------- */
+
+.player {
+  margin-top: 18px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--panel-soft);
+}
+
+.player-controls {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.play-button {
+  width: 43px;
+  height: 43px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 13px;
+  color: white;
+  font-size: 15px;
+  cursor: pointer;
+  background: linear-gradient(135deg, var(--pink), var(--blue));
+  box-shadow: 0 5px 18px rgba(145,101,238,.2);
+  transition: transform .2s, opacity .2s;
+}
+
+.play-button:hover:not(:disabled) {
+  transform: scale(1.06);
+}
+
+.play-button:disabled {
+  opacity: .35;
+  cursor: not-allowed;
+}
+
+#playIcon {
+  line-height: 1;
+}
+
+.timeline {
+  min-width: 0;
+  flex: 1;
+}
+
+.seek-bar {
+  width: 100%;
+  height: 6px;
+  display: block;
+  margin: 0;
+  border-radius: 10px;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  background: #38384c;
+  accent-color: var(--pink);
+}
+
+.seek-bar:disabled {
+  opacity: .35;
+  cursor: not-allowed;
+}
+
+.seek-bar::-webkit-slider-thumb {
+  width: 13px;
+  height: 13px;
+  appearance: none;
+  -webkit-appearance: none;
+  border-radius: 50%;
+  background: white;
+  border: 3px solid var(--pink);
+  box-shadow: 0 0 8px rgba(255,94,188,.35);
+}
+
+.seek-bar::-moz-range-thumb {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: white;
+  border: 3px solid var(--pink);
+  box-shadow: 0 0 8px rgba(255,94,188,.35);
+}
+
+.time-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* --------------------------------------------------
+   METRONOME TOGGLE
+-------------------------------------------------- */
+
+.metronome-toggle {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  margin-top: 17px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+  cursor: pointer;
+}
+
+.metronome-toggle input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.toggle-check {
+  width: 19px;
+  height: 19px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255,255,255,.25);
+  border-radius: 6px;
+  background: #29293b;
+  transition: background .2s, border-color .2s;
+}
+
+.metronome-toggle input:checked + .toggle-check {
+  border-color: transparent;
+  background: linear-gradient(135deg, var(--pink), var(--blue));
+}
+
+.metronome-toggle input:checked + .toggle-check::after {
+  content: "✓";
+  color: white;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.metronome-toggle input:focus-visible + .toggle-check {
+  outline: 2px solid white;
+  outline-offset: 3px;
+}
+
+.metronome-copy {
+  min-width: 0;
+  flex: 1;
+  display: grid;
+  gap: 3px;
+}
+
+.metronome-copy strong {
+  color: var(--text);
+  font-size: 12px;
+}
+
+.metronome-copy small {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.metronome-bpm {
+  color: #c5b5ff;
+  font-size: 11px;
+  font-weight: 750;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 380px) {
+  .player {
+    padding: 12px;
+  }
+
+  .metronome-copy small {
+    font-size: 9px;
+  }
+}
+
+/* Volume controls */
+
+.volume-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 15px;
+}
+
+.volume-controls label {
+  width: 115px;
+  flex-shrink: 0;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.volume-controls input {
+  flex: 1;
+  min-width: 0;
+  height: 5px;
+  accent-color: var(--pink);
+  cursor: pointer;
+}
+
+.volume-controls span {
+  width: 38px;
+  color: #c5b5ff;
+  font-size: 10px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}

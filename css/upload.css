@@ -1,0 +1,44 @@
+/* File upload and file information */
+.drop-zone {
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  border: 1.5px dashed rgba(174,151,255,.42);
+  border-radius: 17px;
+  background: linear-gradient(145deg, rgba(255,94,188,.045), rgba(108,140,255,.055));
+  cursor: pointer;
+  text-align: center;
+  transition: border-color .2s, background .2s, transform .2s;
+}
+.drop-zone:hover, .drop-zone.dragging {
+  border-color: var(--pink);
+  background: rgba(255,94,188,.08);
+}
+.drop-zone.dragging { transform: scale(1.01); }
+.drop-zone input { display: none; }
+.upload-icon {
+  width: 43px; height: 43px; display: grid; place-items: center;
+  margin-bottom: 15px; border-radius: 14px;
+  color: white; font-size: 24px;
+  background: linear-gradient(135deg, var(--pink), var(--blue));
+}
+.drop-zone strong { font-size: 15px; }
+.drop-hint { margin-top: 7px; color: var(--muted); font-size: 12px; }
+.file-types { margin-top: 17px; color: #77758d; font-size: 10px; letter-spacing: .09em; }
+
+.file-info {
+  display: flex; align-items: center; gap: 12px;
+  margin-top: 14px; padding: 12px 14px;
+  border-radius: 14px; background: var(--panel-soft);
+}
+.file-icon {
+  width: 38px; height: 38px; display: grid; place-items: center;
+  flex: 0 0 auto; border-radius: 11px;
+  color: #ffc0e4; background: rgba(255,94,188,.13); font-size: 20px;
+}
+.file-copy { min-width: 0; flex: 1; display: grid; gap: 4px; }
+.file-copy strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
+.file-copy span { color: var(--muted); font-size: 11px; }
