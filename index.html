@@ -41,7 +41,10 @@
             <span id="playIcon" aria-hidden="true">▶</span>
           </button>
           <div class="timeline">
-            <input class="seek-bar" id="seekBar" type="range" min="0" max="1000" value="0" step="1" aria-label="Seek through audio" disabled>
+            <div class="seek-track-wrap">
+              <input class="seek-bar" id="seekBar" type="range" min="0" max="1000" value="0" step="1" aria-label="Seek through audio" disabled>
+              <div class="bpm-markers" id="bpmMarkers"></div>
+            </div>
             <div class="time-row"><span id="currentTime">0:00</span><span id="duration">0:00</span></div>
           </div>
         </div>
@@ -64,6 +67,15 @@
         </label>
       </section>
 
+      <label class="metronome-toggle" for="bpmSwitchesEnabled">
+        <input id="bpmSwitchesEnabled" type="checkbox">
+        <span class="toggle-check" aria-hidden="true"></span>
+        <span class="metronome-copy">
+          <strong>Song Contains BPM Switches</strong>
+          <small>Detect tempo changes throughout the song</small>
+        </span>
+      </label>
+      
       <button class="analyze-button" id="analyzeButton" type="button" disabled>
         <span class="button-label">Analyze BPM</span>
         <span class="button-arrow" aria-hidden="true">→</span>
@@ -81,6 +93,18 @@
         <p class="result-label">ESTIMATED TEMPO</p>
         <div class="bpm-line"><strong id="bpmValue">--</strong><span>BPM</span></div>
         <p class="result-note" id="resultNote">Analysis complete.</p>
+        <div class="bpm-changes" id="bpmChanges" hidden>
+          <h3>Tempo Changes</h3>
+          <table class="bpm-table">
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>BPM</th>
+              </tr>
+            </thead>
+            <tbody id="bpmTableBody"></tbody>
+          </table>
+        </div>
         <button class="text-button retry-button" id="retryButton" type="button">Analyze another file</button>
       </section>
 
