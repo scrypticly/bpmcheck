@@ -36,8 +36,14 @@
   const metronomeVolume = document.getElementById("metronomeVolume");
   const metronomeVolumeValue = document.getElementById("metronomeVolumeValue");
 
+  const bpmSwitchesEnabled = document.getElementById("bpmSwitchesEnabled");
+  const bpmChanges = document.getElementById("bpmChanges");
+  const bpmTableBody = document.getElementById("bpmTableBody");
+  const bpmMarkers = document.getElementById("bpmMarkers");
+  
   let selectedFile = null;
   let isAnalyzing = false;
+  let bpmSegments = [];
 
   // Playback state
   const audio = new Audio();
@@ -58,6 +64,7 @@
   let audioContext = null;
   let metronomeTimer = null;
   let nextBeatIndex = 0;
+  let nextBeatTime = 0;
 
   const METRONOME_LOOKAHEAD = 0.12;
   const METRONOME_INTERVAL = 25;
@@ -80,6 +87,61 @@
     const bpm = Number(bpmValue.textContent);
     return Number.isFinite(bpm) && bpm > 0 ? bpm : null;
   }
+
+  function formatBpmTime(seconds) {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = Math.floor(seconds % 60);
+  const milliseconds = Math.floor((seconds % 1) * 100);
+
+  return `${minutes}:${String(remainingSeconds).padStart(2, "0")}.${String(milliseconds).padStart(2, "0")}`;
+}
+
+function getBpmAtTime(time) {
+  if (!bpmSegments.length) return getBpm();
+
+  let activeSegment = bpmSegments[0];
+
+  for (const segment of bpmSegments) {
+    if (segment.start > time) break;
+    activeSegment = segment;
+  }
+
+  return activeSegment.bpm;
+}
+
+function renderBpmChanges() {
+  bpmTableBody.innerHTML = "";
+  bpmMarkers.innerHTML = "";
+
+  if (bpmSegments.length <= 1 || !Number.isFinite(audio.duration)) {
+    bpmChanges.hidden = true;
+    return;
+  }
+
+  bpmChanges.hidden = false;
+
+  bpmSegments.forEach((segment, index) => {
+    const row = document.createElement("tr");
+
+    const timeCell = document.createElement("td");
+    const bpmCell = document.createElement("td");
+
+    timeCell.textContent = formatBpmTime(segment.start);
+    bpmCell.textContent = `${segment.bpm} BPM`;
+
+    row.append(timeCell, bpmCell);
+    bpmTableBody.appendChild(row);
+
+    if (index === 0) return;
+
+    const marker = document.createElement("div");
+    marker.className = "bpm-marker";
+    marker.style.left = `${(segment.start / audio.duration) * 100}%`;
+    marker.title = `${segment.bpm} BPM at ${formatTime(segment.start)}`;
+
+    bpmMarkers.appendChild(marker);
+  });
+}
 
   function setFile(file) {
     if (!file) return;
@@ -164,6 +226,11 @@
 
     playButton.disabled = true;
     seekBar.disabled = true;
+
+    bpmSegments = [];
+    bpmChanges.hidden = true;
+    bpmTableBody.innerHTML = "";
+    bpmMarkers.innerHTML = "";
   }
 
   function showError(message) {
@@ -293,70 +360,98 @@
     return audioContext;
   }
 
-  async function startMetronome() {
-    const bpm = getBpm();
-
-    if (!bpm || !metronomeEnabled.checked || audio.paused) return;
-
-    try {
-      await getAudioContext();
-
-      if (audio.paused || !metronomeEnabled.checked) return;
-
-      stopMetronome();
-
-      // Calculate the next beat relative to the beginning of the song.
-      const beatDuration = 60 / bpm;
-
-      nextBeatIndex = Math.ceil(
-        audio.currentTime / beatDuration - 0.00001
-      );
-
-      scheduleMetronome();
-      metronomeTimer = setInterval(
-        scheduleMetronome,
-        METRONOME_INTERVAL
-      );
-
-    } catch (error) {
-      console.error("Metronome error:", error);
-      metronomeStatus.textContent = "Audio unavailable";
-    }
+function getTempoSegmentAtTime(time) {
+  if (!bpmSegments.length) {
+    return { start: 0, bpm: getBpm() };
   }
 
-  function scheduleMetronome() {
-    if (!audioContext || audio.paused || !metronomeEnabled.checked) {
-      stopMetronome();
-      return;
+  let activeSegment = bpmSegments[0];
+
+  for (const segment of bpmSegments) {
+    if (segment.start > time) break;
+    activeSegment = segment;
+  }
+
+  return activeSegment;
+}
+
+async function startMetronome() {
+  const bpm = getBpm();
+
+  if (!bpm || !metronomeEnabled.checked || audio.paused) return;
+
+  try {
+    await getAudioContext();
+
+    if (audio.paused || !metronomeEnabled.checked) return;
+
+    stopMetronome();
+
+    const segment = getTempoSegmentAtTime(audio.currentTime);
+    const beatDuration = 60 / segment.bpm;
+
+    nextBeatTime = segment.start +
+      Math.ceil((audio.currentTime - segment.start) / beatDuration - 0.00001) *
+      beatDuration;
+
+    if (nextBeatTime < audio.currentTime - 0.02) {
+      nextBeatTime += beatDuration;
     }
 
-    const bpm = getBpm();
-    if (!bpm) return;
+    scheduleMetronome();
 
-    const beatDuration = 60 / bpm;
-    const currentAudioTime = audio.currentTime;
-    const lookahead = METRONOME_LOOKAHEAD;
+    metronomeTimer = setInterval(
+      scheduleMetronome,
+      METRONOME_INTERVAL
+    );
+  } catch (error) {
+    console.error("Metronome error:", error);
+    metronomeStatus.textContent = "Audio unavailable";
+  }
+}
 
-    // Schedule upcoming clicks slightly ahead of playback time.
-    while (
-      nextBeatIndex * beatDuration <= currentAudioTime + lookahead
+function scheduleMetronome() {
+  if (!audioContext || audio.paused || !metronomeEnabled.checked) {
+    stopMetronome();
+    return;
+  }
+
+  const currentAudioTime = audio.currentTime;
+  const lookahead = METRONOME_LOOKAHEAD;
+
+  while (nextBeatTime <= currentAudioTime + lookahead) {
+    const segment = getTempoSegmentAtTime(nextBeatTime);
+    const beatDuration = 60 / segment.bpm;
+
+    const nextSegment = bpmSegments.find(
+      item => item.start > segment.start
+    );
+
+    // Don't schedule a beat past the next tempo change.
+    if (nextSegment && nextBeatTime >= nextSegment.start) {
+      nextBeatTime = nextSegment.start;
+      continue;
+    }
+
+    if (nextBeatTime >= currentAudioTime - 0.02) {
+      const delay = Math.max(
+        0,
+        (nextBeatTime - currentAudioTime) / audio.playbackRate
+      );
+
+      playMetronomeClick(audioContext.currentTime + delay);
+    }
+
+    if (
+      nextSegment &&
+      nextBeatTime + beatDuration >= nextSegment.start
     ) {
-      const beatTime = nextBeatIndex * beatDuration;
-
-      if (beatTime >= currentAudioTime - 0.02) {
-        const delay = Math.max(
-          0,
-          (beatTime - currentAudioTime) / audio.playbackRate
-        );
-
-        const scheduledTime = audioContext.currentTime + delay;
-
-        playMetronomeClick(scheduledTime);
-      }
-
-      nextBeatIndex++;
+      nextBeatTime = nextSegment.start;
+    } else {
+      nextBeatTime += beatDuration;
     }
   }
+}
 
   function playMetronomeClick(time) {
     if (!audioContext) return;
@@ -472,8 +567,60 @@
 
       setProgress(90, "Estimating tempo…");
 
-      const estimate = estimateBpm(onsets.values, onsets.rate);
+      let estimate;
 
+if (bpmSwitchesEnabled.checked) {
+  setProgress(92, "Checking for tempo changes…");
+
+  bpmSegments = detectBpmChanges(onsets.values, onsets.rate);
+
+  if (!bpmSegments || bpmSegments.length === 0) {
+    throw new Error("We couldn't reliably detect the tempo of this song.");
+  }
+
+  estimate = {
+    bpm: bpmSegments[0].bpm,
+    confidence: 1
+  };
+} else {
+  bpmSegments = [];
+
+  estimate = estimateBpm(onsets.values, onsets.rate);
+
+  if (!estimate || !Number.isFinite(estimate.bpm)) {
+    throw new Error(
+      "We couldn't find a steady beat in this audio. Try a clearer section or another file."
+    );
+  }
+
+  bpmSegments = [{
+    start: 0,
+    bpm: Math.round(estimate.bpm)
+  }];
+}
+
+setProgress(100, "Analysis complete");
+
+bpmValue.textContent = String(Math.round(estimate.bpm));
+
+if (bpmSwitchesEnabled.checked) {
+  resultNote.textContent = bpmSegments.length > 1
+    ? `Detected ${bpmSegments.length} tempo sections throughout the song.`
+    : "No clear tempo changes detected. The song appears to have a steady tempo.";
+} else {
+  resultNote.textContent = estimate.confidence < 1.15
+    ? "Estimated tempo — this track may have a loose or changing beat."
+    : "Estimated tempo detected from the audio.";
+}
+
+renderBpmChanges();
+result.hidden = false;
+
+updateMetronomeStatus();
+
+if (!audio.paused && metronomeEnabled.checked) {
+  startMetronome();
+}
       if (!estimate || !Number.isFinite(estimate.bpm)) {
         throw new Error(
           "We couldn't find a steady beat in this audio. Try a clearer section or another file."
@@ -749,3 +896,86 @@
     return { bpm, confidence };
   }
 })();
+
+function detectBpmChanges(onsets, rate) {
+  const windowSeconds = 10;
+  const stepSeconds = 2;
+
+  const windowSize = Math.floor(windowSeconds * rate);
+  const stepSize = Math.floor(stepSeconds * rate);
+
+  if (onsets.length < windowSize) {
+    const estimate = estimateBpm(onsets, rate);
+
+    return estimate
+      ? [{ start: 0, bpm: Math.round(estimate.bpm) }]
+      : null;
+  }
+
+  const windows = [];
+
+  for (let start = 0; start + windowSize <= onsets.length; start += stepSize) {
+    const section = onsets.subarray(start, start + windowSize);
+    const estimate = estimateBpm(section, rate);
+
+    if (!estimate || estimate.confidence < 1.05) continue;
+
+    windows.push({
+      start: start / rate,
+      bpm: estimate.bpm
+    });
+  }
+
+  if (windows.length === 0) return null;
+
+  // Smooth estimates using the median of neighboring windows.
+  const smoothed = windows.map((window, index) => {
+    const nearby = windows
+      .slice(Math.max(0, index - 1), Math.min(windows.length, index + 2))
+      .map(item => item.bpm)
+      .sort((a, b) => a - b);
+
+    return {
+      start: window.start,
+      bpm: nearby[Math.floor(nearby.length / 2)]
+    };
+  });
+
+  const segments = [{
+    start: 0,
+    bpm: Math.round(smoothed[0].bpm)
+  }];
+
+  let currentBpm = smoothed[0].bpm;
+
+  // Require three consecutive windows to agree on a new tempo.
+  for (let i = 1; i <= smoothed.length - 3; i++) {
+    const candidate = smoothed[i].bpm;
+    const next = smoothed[i + 1].bpm;
+    const following = smoothed[i + 2].bpm;
+
+    const difference = Math.abs(candidate - currentBpm);
+    const minimumDifference = Math.max(3, currentBpm * 0.035);
+
+    const candidateIsStable =
+      Math.abs(candidate - next) <= candidate * 0.04 &&
+      Math.abs(candidate - following) <= candidate * 0.04;
+
+    if (
+      difference >= minimumDifference &&
+      candidateIsStable
+    ) {
+      currentBpm = (candidate + next + following) / 3;
+
+      segments.push({
+        start: smoothed[i].start,
+        bpm: Math.round(currentBpm)
+      });
+
+      // Skip the windows already used to confirm this change.
+      i += 2;
+    }
+  }
+
+  return segments;
+}
